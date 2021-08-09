@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"io/ioutil"
 
 	"github.com/42wim/matterbridge/bridge"
 	"github.com/42wim/matterbridge/bridge/config"
@@ -209,6 +210,7 @@ func (b *Bslack) Send(msg config.Message) (string, error) {
 	}
 	return b.sendRTM(msg)
 }
+
 
 // sendWebhook uses the configured WebhookURL to send the message
 func (b *Bslack) sendWebhook(msg config.Message) error {
@@ -478,6 +480,25 @@ func (b *Bslack) uploadFile(msg *config.Message, channelID string) {
 		}
 	}
 }
+func isSameUser(usrname string) (bool) {
+	// Returns true if the last message came from the same user
+	lastMessageUser, err := ioutil.ReadFile("lastMessageUser.data")
+	if err != nil {
+	  fmt.Println(err)
+	}
+	return string(lastMessageUser) == usrname
+}
+
+func addMsgSignature(msg *config.Message) (bool) {
+	if isSameUser(msg.Username) || msg.MsgSignature == ""  {
+		return false
+	}
+	return true
+}
+
+func writeLastUser(username string) {
+	ioutil.WriteFile("lastMessageUser.data", []byte(username), 0777)
+}
 
 func (b *Bslack) prepareMessageOptions(msg *config.Message) []slack.MsgOption {
 	params := slack.NewPostMessageParameters()
@@ -502,22 +523,42 @@ func (b *Bslack) prepareMessageOptions(msg *config.Message) []slack.MsgOption {
 		}
 	}
 
+	var messageOptions slack.MsgOption
+
+	if addMsgSignature(msg) {
+		messageOptions = slack.MsgOptionBlocks(
+			slack.NewSectionBlock(
+				slack.NewTextBlockObject(slack.MarkdownType, msg.Text, false, false),
+				nil, nil,
+				slack.SectionBlockOptionBlockID("matterbridge_"+b.uuid),
+			),
+			slack.NewContextBlock("1", slack.NewTextBlockObject("mrkdwn", msg.MsgSignature, false, false)),
+		)
+	} else {
+		messageOptions = slack.MsgOptionBlocks(
+			slack.NewSectionBlock(
+				slack.NewTextBlockObject(slack.MarkdownType, msg.Text, false, false),
+				nil, nil,
+				slack.SectionBlockOptionBlockID("matterbridge_"+b.uuid),
+			),
+		)
+	}
+	writeLastUser(msg.Username)
+
 	var opts []slack.MsgOption
 	opts = append(opts,
 		// provide regular text field (fallback used in Slack notifications, etc.)
 		slack.MsgOptionText(msg.Text, false),
 
 		// add a callback ID so we can see we created it
-		slack.MsgOptionBlocks(slack.NewSectionBlock(
-			slack.NewTextBlockObject(slack.MarkdownType, msg.Text, false, false),
-			nil, nil,
-			slack.SectionBlockOptionBlockID("matterbridge_"+b.uuid),
-		)),
+		messageOptions,
+
 
 		slack.MsgOptionEnableLinkUnfurl(),
 	)
 	opts = append(opts, slack.MsgOptionAttachments(attachments...))
 	opts = append(opts, slack.MsgOptionPostMessageParameters(params))
+
 	return opts
 }
 

@@ -23,11 +23,12 @@ type API struct {
 }
 
 type Message struct {
-	Text     string `json:"text"`
-	Username string `json:"username"`
-	UserID   string `json:"userid"`
-	Avatar   string `json:"avatar"`
-	Gateway  string `json:"gateway"`
+	Text          string `json:"text"`
+	Username      string `json:"username"`
+	UserID        string `json:"userid"`
+	Avatar        string `json:"avatar"`
+	Gateway       string `json:"gateway"`
+	MsgSignature  string `json:"msgsignature"`
 }
 
 func New(cfg *bridge.Config) bridge.Bridger {
