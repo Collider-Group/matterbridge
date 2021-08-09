@@ -2,6 +2,17 @@
 
 # matterbridge
 
+
+## Collider Deploy Notes
+Make sure the `gcloud` cli tool is installed and login with `gcloud auth`
+
+To deploy to the docker repo use ` gcloud builds submit --tag gcr.io/colliderbot/matterbridge`
+
+On our `ColliderBot-Relay` service you'll need to SSH into the machine,
+`docker pull gcr.io/colliderbot/matterbridge`
+
+and restart the service with the new image
+
 ![Matterbridge Logo](img/matterbridge-notext.gif)<br />
 **A simple chat bridge**<br />
 Letting people be where they want to be.<br />

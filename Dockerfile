@@ -1,9 +1,9 @@
 FROM alpine:edge AS builder
 
 COPY . /go/src/matterbridge
-RUN apk --no-cache add go git \
-        && cd /go/src/matterbridge \
-        && CGO_ENABLED=0 go build -mod vendor -ldflags "-X github.com/42wim/matterbridge/version.GitHash=$(git log --pretty=format:'%h' -n 1)" -o /bin/matterbridge
+RUN apk --no-cache add go git
+WORKDIR /go/src/matterbridge
+RUN go build -mod vendor -o /bin/matterbridge
 
 FROM alpine
 RUN apk --no-cache add ca-certificates mailcap

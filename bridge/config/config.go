@@ -32,19 +32,20 @@ const (
 const ParentIDNotFound = "msg-parent-not-found"
 
 type Message struct {
-	Text      string    `json:"text"`
-	Channel   string    `json:"channel"`
-	Username  string    `json:"username"`
-	UserID    string    `json:"userid"` // userid on the bridge
-	Avatar    string    `json:"avatar"`
-	Account   string    `json:"account"`
-	Event     string    `json:"event"`
-	Protocol  string    `json:"protocol"`
-	Gateway   string    `json:"gateway"`
-	ParentID  string    `json:"parent_id"`
-	Timestamp time.Time `json:"timestamp"`
-	ID        string    `json:"id"`
-	Extra     map[string][]interface{}
+	Text           string    `json:"text"`
+	Channel        string    `json:"channel"`
+	Username       string    `json:"username"`
+	UserID         string    `json:"userid"` // userid on the bridge
+	Avatar         string    `json:"avatar"`
+	Account        string    `json:"account"`
+	Event          string    `json:"event"`
+	Protocol       string    `json:"protocol"`
+	Gateway        string    `json:"gateway"`
+	ParentID       string    `json:"parent_id"`
+	Timestamp      time.Time `json:"timestamp"`
+	ID             string    `json:"id"`
+	MsgSignature   string    `json:"msgsignature"`
+	Extra          map[string][]interface{}
 }
 
 func (m Message) ParentNotFound() bool {
@@ -90,6 +91,7 @@ type Protocol struct {
 	BindAddress            string   // mattermost, slack // DEPRECATED
 	Buffer                 int      // api
 	Charset                string   // irc
+	Chaturl                string   // all protocols
 	ClientID               string   // msteams
 	ColorNicks             bool     // only irc for now
 	Debug                  bool     // general

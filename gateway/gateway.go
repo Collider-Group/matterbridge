@@ -447,6 +447,15 @@ func (gw *Gateway) SendMessage(
 	msg.Avatar = gw.modifyAvatar(rmsg, dest)
 	msg.Username = gw.modifyUsername(rmsg, dest)
 
+	// Brian Edits
+	br := gw.Bridges[msg.Account]
+	if br.GetString("MsgSignature") != "" {
+		msg.MsgSignature = br.GetString("MsgSignature")
+	} else {
+		msg.MsgSignature = ""
+	}
+
+
 	msg.ID = gw.getDestMsgID(rmsg.Protocol+" "+rmsg.ID, dest, channel)
 
 	// for api we need originchannel as channel
