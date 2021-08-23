@@ -44,7 +44,7 @@ type Message struct {
 	ParentID       string    `json:"parent_id"`
 	Timestamp      time.Time `json:"timestamp"`
 	ID             string    `json:"id"`
-	MsgSignature   string    `json:"msgsignature"`
+	Signature   	 string    `json:"signature"`
 	Extra          map[string][]interface{}
 }
 
@@ -204,6 +204,7 @@ type Tengo struct {
 	Message          string
 	RemoteNickFormat string
 	OutMessage       string
+	MessageSig       string
 }
 
 type SameChannelGateway struct {

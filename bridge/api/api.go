@@ -28,7 +28,7 @@ type Message struct {
 	UserID        string `json:"userid"`
 	Avatar        string `json:"avatar"`
 	Gateway       string `json:"gateway"`
-	MsgSignature  string `json:"msgsignature"`
+	Signature		  string `json:"signature"`
 }
 
 func New(cfg *bridge.Config) bridge.Bridger {

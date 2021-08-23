@@ -490,7 +490,7 @@ func isSameUser(usrname string) (bool) {
 }
 
 func addMsgSignature(msg *config.Message) (bool) {
-	if isSameUser(msg.Username) || msg.MsgSignature == ""  {
+	if isSameUser(msg.Username) || msg.Signature == ""  {
 		return false
 	}
 	return true
@@ -532,7 +532,7 @@ func (b *Bslack) prepareMessageOptions(msg *config.Message) []slack.MsgOption {
 				nil, nil,
 				slack.SectionBlockOptionBlockID("matterbridge_"+b.uuid),
 			),
-			slack.NewContextBlock("1", slack.NewTextBlockObject("mrkdwn", msg.MsgSignature, false, false)),
+			slack.NewContextBlock("1", slack.NewTextBlockObject("mrkdwn", msg.Signature, false, false)),
 		)
 	} else {
 		messageOptions = slack.MsgOptionBlocks(

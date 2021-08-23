@@ -364,6 +364,42 @@ func (gw *Gateway) modifyAvatar(msg *config.Message, dest *bridge.Bridge) string
 	return msg.Avatar
 }
 
+func (gw *Gateway) addMessageSignatureTengo(origmsg *config.Message, msg *config.Message, br *bridge.Bridge) (bool, error) {
+  filename := gw.BridgeValues().Tengo.MessageSig
+  var (
+    res  []byte
+    err  error
+    drop bool
+  )
+
+  if filename == "" {
+    return false, err
+  } else {
+    res, err = ioutil.ReadFile(filename)
+    if err != nil {
+      return drop, err
+    }
+  }
+
+  s := tengo.NewScript(res)
+
+  s.SetImports(stdlib.GetModuleMap(stdlib.AllModuleNames()...))
+  _ = s.Add("inChannel", origmsg.Channel)
+  _ = s.Add("msgSignature", msg.Signature)
+  c, err := s.Compile()
+  if err != nil {
+    return drop, err
+  }
+
+  if err := c.Run(); err != nil {
+    return drop, err
+  }
+
+  msg.Signature = c.Get("msgSignature").String()
+
+  return true, nil
+}
+
 func (gw *Gateway) modifyMessage(msg *config.Message) {
 	if gw.BridgeValues().General.TengoModifyMessage != "" {
 		gw.logger.Warnf("General TengoModifyMessage=%s is deprecated and will be removed in v1.20.0, please move to Tengo InMessage=%s", gw.BridgeValues().General.TengoModifyMessage, gw.BridgeValues().General.TengoModifyMessage)
@@ -447,14 +483,6 @@ func (gw *Gateway) SendMessage(
 	msg.Avatar = gw.modifyAvatar(rmsg, dest)
 	msg.Username = gw.modifyUsername(rmsg, dest)
 
-	// Brian Edits
-	br := gw.Bridges[msg.Account]
-	if br.GetString("MsgSignature") != "" {
-		msg.MsgSignature = br.GetString("MsgSignature")
-	} else {
-		msg.MsgSignature = ""
-	}
-
 
 	msg.ID = gw.getDestMsgID(rmsg.Protocol+" "+rmsg.ID, dest, channel)
 
@@ -487,6 +515,12 @@ func (gw *Gateway) SendMessage(
 	if debugSendMessage != "" {
 		gw.logger.Debug(debugSendMessage)
 	}
+	// Tengo script to add signature to end of message
+	drop, err = gw.addMessageSignatureTengo(rmsg, &msg, dest)
+	if err != nil {
+		gw.logger.Errorf("addMessageSignatureTengo: %s", err)
+	}
+
 	// if we are using mattermost plugin account, send messages to MattermostPlugin channel
 	// that can be picked up by the mattermost matterbridge plugin
 	if dest.Account == "mattermost.plugin" {

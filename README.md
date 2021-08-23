@@ -4,14 +4,20 @@
 
 
 ## Collider Deploy Notes
-Make sure the `gcloud` cli tool is installed and login with `gcloud auth`
+Make sure the `gcloud` cli tool is installed and login with `gcloud auth login`
+Then set the project with `gcloud config set project colliderbot`
 
-To deploy to the docker repo use ` gcloud builds submit --tag gcr.io/colliderbot/matterbridge`
+To deploy to the docker repo use `gcloud builds submit --tag gcr.io/colliderbot/matterbridge`
 
 On our `ColliderBot-Relay` service you'll need to SSH into the machine,
 `docker pull gcr.io/colliderbot/matterbridge`
 
 and restart the service with the new image
+
+## To run locally
+Make sure go is installed locally (Currently using `go1.16.6 darwin/amd64`)
+Add a `matterbridge.toml` file to the root dir
+Run with: `go run .`
 
 ![Matterbridge Logo](img/matterbridge-notext.gif)<br />
 **A simple chat bridge**<br />
