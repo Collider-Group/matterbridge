@@ -9,10 +9,7 @@ Then set the project with `gcloud config set project colliderbot`
 
 To deploy to the docker repo use `gcloud builds submit --tag gcr.io/colliderbot/matterbridge`
 
-On our `ColliderBot-Relay` service you'll need to SSH into the machine,
-`docker pull gcr.io/colliderbot/matterbridge`
-
-and restart the service with the new image
+On our `ColliderBot-Relay` service you'll need to restart the VM to pull the updated image. Login to Google Cloud, go to `Compute Engine -> VM Instances`, select the 3-dot menu button next to `collider-bot-relay-0` and click restart.
 
 ## To run locally
 Make sure go is installed locally (Currently using `go1.16.6 darwin/amd64`)
