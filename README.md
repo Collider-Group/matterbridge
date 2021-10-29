@@ -7,7 +7,7 @@
 Make sure the `gcloud` cli tool is installed and login with `gcloud auth login`
 Then set the project with `gcloud config set project colliderbot`
 
-To deploy to the docker repo use `gcloud builds submit --tag gcr.io/colliderbot/matterbridge`
+To deploy to the docker repo use `gcloud builds submit --tag gcr.io/colliderbot/matterbridge --project colliderbot`
 
 On our `ColliderBot-Relay` service you'll need to restart the VM to pull the updated image. Login to Google Cloud, go to `Compute Engine -> VM Instances`, select the 3-dot menu button next to `collider-bot-relay-0` and click restart.
 

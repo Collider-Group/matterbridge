@@ -3,6 +3,7 @@ FROM alpine:edge AS builder
 COPY . /go/src/matterbridge
 RUN apk --no-cache add go git
 WORKDIR /go/src/matterbridge
+RUN apk --update add build-base
 RUN go build -mod vendor -o /bin/matterbridge
 
 FROM python:alpine
